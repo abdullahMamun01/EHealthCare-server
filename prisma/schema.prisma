@@ -12,3 +12,94 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                 String   @id @default(uuid())
+  role               UserRole
+  email              String   @unique
+  password           String
+  needPasswordChange Boolean  @default(true)
+  isDeleted          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @default(now())
+
+  patient Patient?
+  Doctor  Doctor?
+  Admin   Admin?
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+model Patient {
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique
+  photo      String?
+  contactNo  String?
+  isDeleted  Boolean     @default(false)
+  address    String?
+  bloodGroup BloodGroup?
+  user       User        @relation(references: [email], fields: [email])
+  gender     Gender?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now())
+}
+
+enum BloodGroup {
+  A_POS
+  A_NEG
+  B_POS
+  B_NEG
+  AB_POS
+  AB_NEG
+  O_POS
+  O_NEG
+}
+
+model Doctor {
+  id                String        @id @default(uuid())
+  name              String
+  email             String        @unique
+  photo             String?
+  gender            Gender?
+  yearsOfExperience Int           @default(0)
+  contactNo         String
+  adress            String
+  country           String
+  licenseNo         String
+  consultationFee   Int
+  isDeleted         Boolean       @default(false)
+  avgRating         Float         @default(0.0)
+  status            AccountStatus
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @default(now())
+
+  user User @relation(references: [email], fields: [email])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  photo     String?
+  contactNo String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  user User @relation(references: [email], fields: [email])
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}
