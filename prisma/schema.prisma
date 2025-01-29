@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id                 String   @id @default(uuid())
-  role               UserRole
+  role               UserRole @default(PATIENT)
   email              String   @unique
   password           String
   needPasswordChange Boolean  @default(true)
@@ -47,6 +47,7 @@ model Patient {
   address   String?
   user      User     @relation(references: [email], fields: [email])
   gender    Gender?
+  country   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

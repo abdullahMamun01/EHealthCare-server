@@ -22,7 +22,7 @@ CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELED', 'CO
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "role" "UserRole" NOT NULL,
+    "role" "UserRole" NOT NULL DEFAULT 'PATIENT',
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "needPasswordChange" BOOLEAN NOT NULL DEFAULT true,
@@ -43,6 +43,7 @@ CREATE TABLE "patients" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "address" TEXT,
     "gender" "Gender",
+    "country" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
