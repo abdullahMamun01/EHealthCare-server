@@ -24,6 +24,7 @@ const registerSchema = loginSchema.extend({
       message: 'Invalid email address',
     })
     .nonempty(),
+  role: z.string().optional(),
   password: z
     .string({ required_error: 'Password is required' })
     .min(6, 'Password must be at least 6 characters')
@@ -35,14 +36,3 @@ export type RegisterDto = z.infer<typeof registerSchema>;
 
 export { loginSchema, registerSchema };
 
-// export type ILoginDto   = {
-//     email: string;
-//     password: string;
-//   }
-
-//   export type IRegisterDto = {
-//     name: string;
-//     country: string;
-//     email: string;
-//     password: string;
-//   }

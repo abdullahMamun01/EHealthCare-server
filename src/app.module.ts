@@ -10,19 +10,15 @@ import { JwtAuthService } from './jwt-auth/jwt-auth.service';
 import { JwtConfigModule } from './jwt-auth/JwtConfigModule';
 import { PrismaModule } from './prisma/prisma.module';
 
-
 @Module({
   imports: [
     AuthModule,
     ConfigModule.forRoot({
-      
       load: [configuration],
       isGlobal: true,
     }),
-    
     JwtConfigModule,
-    
-    PrismaModule
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

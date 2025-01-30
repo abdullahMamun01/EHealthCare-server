@@ -22,12 +22,12 @@ export class AuthService {
     }
 
     const transaction = await this.prismaService.$transaction(async (tx) => {
-      const password = await this.jwtService.hashedPassword(payload.password)
-      console.log(password, 'oooo')
-      const user = await tx.user.create({
+      const password = await this.jwtService.hashedPassword(payload.password);
+      await tx.user.create({
         data: {
           email: payload.email,
-          password
+          password,
+          needPasswordChange: false,
         },
       });
       const patient = await tx.patient.create({
@@ -37,10 +37,7 @@ export class AuthService {
           country: payload.country,
         },
       });
-      return {
-        user,
-        patient,
-      };
+      return patient;
     });
 
     return transaction; // Return the created user instead of just the email
@@ -52,7 +49,7 @@ export class AuthService {
     });
 
     if (!isExist) {
-      throw new Error('User already exists');
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     const user = await this.prismaService.patient.findUnique({
@@ -60,22 +57,32 @@ export class AuthService {
         email: isExist.email,
       },
     });
+    const isPasswordMatch = await this.jwtService.comparePassword(
+      payload.password,
+      isExist.password,
+    );
+
+    if (!isPasswordMatch) {
+      throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+    }
 
     const token = await this.jwtService.accessToken({
       email: isExist.email,
       role: isExist.role,
       name: user.name,
     });
-
-    return sendResponse({
+    const result = sendResponse({
       status: 200,
       success: true,
       message: 'User Login successfully',
       data: {
-        accessToken: token,
-        user,
+        ...user,
         role: isExist.role,
       },
     });
+    return {
+      ...result,
+      accessToken: token,
+    };
   }
 }
