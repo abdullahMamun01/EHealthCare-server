@@ -14,14 +14,6 @@ export class DoctorController {
   getAllDoctors() {
     return this.doctorService.getAllDoctors();
   }
+  
 
-  @Roles(Role.Doctor, Role.Admin)
-  @Patch()
-  updateDoctor(@Request() req: any, @Body() updateDoctorDto: updateDoctorDto) {
-
-    return this.doctorService.updateDoctor(
-      updateDoctorDto as Partial<Doctor>,
-      req.user.email,
-    );
-  }
 }

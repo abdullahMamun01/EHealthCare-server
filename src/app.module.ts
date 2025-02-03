@@ -15,6 +15,8 @@ import { RolesGuard } from './guard/role/RoleGuard';
 import { AdminModule } from './admin/admin.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { DoctorModule } from './doctor/doctor.module';
+import { PatientModule } from './patient/patient.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { DoctorModule } from './doctor/doctor.module';
     AdminModule,
     CloudinaryModule,
     DoctorModule,
+    PatientModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

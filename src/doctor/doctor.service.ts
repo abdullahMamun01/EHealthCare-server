@@ -16,22 +16,7 @@ export class DoctorService {
     });
   }
 
-  async updateDoctor(payload: Partial<Doctor>, email: string) {
-    const isExist = await this.prismaService.doctor.findUnique({
-      where: { email },
-    });
-
-    if (!isExist) {
-      throw new HttpException('Doctor not found', HttpStatus.NOT_FOUND);
-    }
-
-    const updatedDoctor = await this.prismaService.doctor.update({
-      where: { email },
-      data: payload,
-    });
-
-    return updatedDoctor
-  }
+ 
 
   async createAppointment() {}
 
