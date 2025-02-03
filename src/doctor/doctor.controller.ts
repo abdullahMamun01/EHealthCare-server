@@ -1,9 +1,7 @@
-import { Body, Controller, Get, Param, Patch, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, Request } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { Public } from 'src/auth/metadata';
-import { Role, Roles } from 'src/guard/role/roles.decorator';
-import { updateDoctorDto } from './dto/update-doctor.dto';
-import { Doctor } from '@prisma/client';
+
 
 @Controller('doctors')
 export class DoctorController {
@@ -11,9 +9,9 @@ export class DoctorController {
 
   @Public()
   @Get()
-  getAllDoctors() {
-    return this.doctorService.getAllDoctors();
+  getAllDoctors(@Query() query: Record<string ,unknown>) {
+    return this.doctorService.getAllDoctors(query);
   }
-  
+
 
 }
