@@ -9,6 +9,12 @@ import configuration from './config/configuration';
 import { JwtAuthService } from './jwt-auth/jwt-auth.service';
 import { JwtConfigModule } from './jwt-auth/JwtConfigModule';
 import { PrismaModule } from './prisma/prisma.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/AuthGuard';
+import { RolesGuard } from './guard/role/RoleGuard';
+import { AdminModule } from './admin/admin.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
   imports: [
@@ -19,8 +25,22 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     JwtConfigModule,
     PrismaModule,
+    AdminModule,
+    CloudinaryModule,
+    DoctorModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

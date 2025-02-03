@@ -52,11 +52,14 @@ export class AuthService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const user = await this.prismaService.patient.findUnique({
+    const user = await this.prismaService[isExist.role.toLowerCase()].findUnique({
       where: {
         email: isExist.email,
       },
     });
+
+
+
     const isPasswordMatch = await this.jwtService.comparePassword(
       payload.password,
       isExist.password,
@@ -67,6 +70,7 @@ export class AuthService {
     }
 
     const token = await this.jwtService.accessToken({
+      id: isExist.id,
       email: isExist.email,
       role: isExist.role,
       name: user.name,

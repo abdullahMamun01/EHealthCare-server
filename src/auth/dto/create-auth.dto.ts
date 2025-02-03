@@ -10,7 +10,7 @@ const loginSchema = z.object({
     .nonempty({ message: 'Email is required' }),
   password: z
     .string({ required_error: 'Password is required' })
-    .min(6, 'Password must be at least 6 characters')
+    .min(6, 'Password must be at least 3 characters')
     .nonempty({ message: 'Password is required' }),
 });
 

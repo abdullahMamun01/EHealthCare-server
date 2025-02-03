@@ -79,13 +79,13 @@ model Doctor {
   gender            Gender?
   yearsOfExperience Int           @default(0)
   contactNo         String
-  adress            String
+  address            String
   country           String
   licenseNo         String
-  consultationFee   Int
+  consultationFee   Int           @default(0)
   isDeleted         Boolean       @default(false)
   avgRating         Float         @default(0.0)
-  status            AccountStatus
+  status            AccountStatus @default(ACTIVE)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @default(now())
 
@@ -102,6 +102,7 @@ model Doctor {
 enum Gender {
   MALE
   FEMALE
+  OTHER
 }
 
 model Admin {

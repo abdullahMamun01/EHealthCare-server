@@ -5,7 +5,7 @@ CREATE TYPE "UserRole" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'DOCTOR', 'PATIENT');
 CREATE TYPE "BloodGroup" AS ENUM ('A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG');
 
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
+CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE');
@@ -59,13 +59,13 @@ CREATE TABLE "doctors" (
     "gender" "Gender",
     "yearsOfExperience" INTEGER NOT NULL DEFAULT 0,
     "contactNo" TEXT NOT NULL,
-    "adress" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
     "country" TEXT NOT NULL,
     "licenseNo" TEXT NOT NULL,
-    "consultationFee" INTEGER NOT NULL,
+    "consultationFee" INTEGER NOT NULL DEFAULT 0,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "avgRating" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "status" "AccountStatus" NOT NULL,
+    "status" "AccountStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

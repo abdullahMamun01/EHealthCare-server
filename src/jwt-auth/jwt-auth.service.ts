@@ -1,5 +1,3 @@
-
-
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -12,8 +10,6 @@ export class JwtAuthService {
     private configService: ConfigService,
   ) {}
   async accessToken(payload: any) {
-    console.log(this.configService.get('config.accessToken'), 'hello')
-
     const token = await this.jwtservice.signAsync(payload, {
       secret: this.configService.get('config.accessToken'),
       expiresIn: this.configService.get('config.accessTokenExpiresIn'),
@@ -42,15 +38,13 @@ export class JwtAuthService {
   }
 
   async hashedPassword(password: string) {
-    console.log('hello' , password)
     try {
-      
-    const saltRounds = 10;
-    const hashed = await bcrypt.hash(password, saltRounds);
-  
-    return hashed;
+      const saltRounds = 10;
+      const hashed = await bcrypt.hash(password, saltRounds);
+
+      return hashed;
     } catch (error) {
-      console.log(error.message , 'hello')
+      console.log(error.message, 'hello');
     }
   }
 
