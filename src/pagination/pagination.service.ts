@@ -46,7 +46,7 @@ export class PaginationService {
     return this;
   }
 
-  async sortBy( orderBy: string = 'date_asc') {
+  async sortBy(orderBy: string = 'date_asc') {
     let field = 'createdAt';
     let order: 'asc' | 'desc' = 'asc';
 
@@ -69,15 +69,16 @@ export class PaginationService {
 
   async execute() {
     const { page = 1, limit } = this.paginateQuery;
-    this.totalRecords = await this.model.count({
+    const wherAndOrder = {
       where: this.queryFilters.OR ? { OR: this.queryFilters.OR } : {},
       orderBy: this.queryFilters.orderBy,
-    });
+    };
+
+    this.totalRecords = await this.model.count(wherAndOrder);
 
     this.computeMetaData(+page, +limit);
     const data = await this.model.findMany({
-      where: this.queryFilters.OR ? { OR: this.queryFilters.OR } : {},
-      orderBy: this.queryFilters.orderBy,
+      ...wherAndOrder,
       skip: (+page - 1) * +limit,
       take: +limit,
     });
