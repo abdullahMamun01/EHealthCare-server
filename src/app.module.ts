@@ -18,6 +18,7 @@ import { DoctorModule } from './doctor/doctor.module';
 import { PatientModule } from './patient/patient.module';
 import { UserModule } from './user/user.module';
 import { PaginationModule } from './pagination/pagination.module';
+import { SpecialtiesModule } from './specialties/specialties.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PaginationModule } from './pagination/pagination.module';
     PatientModule,
     UserModule,
     PaginationModule,
+    SpecialtiesModule,
   ],
   controllers: [AppController],
   providers: [

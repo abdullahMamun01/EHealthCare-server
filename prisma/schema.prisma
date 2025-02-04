@@ -79,7 +79,7 @@ model Doctor {
   gender            Gender?
   yearsOfExperience Int           @default(0)
   contactNo         String
-  address            String
+  address           String
   country           String
   licenseNo         String
   consultationFee   Int           @default(0)
@@ -246,8 +246,7 @@ model Prescription {
 
 model Specialites {
   id                String              @id @default(uuid())
-  name              String
-  description       String
+  name              String              @unique
   icon              String
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
