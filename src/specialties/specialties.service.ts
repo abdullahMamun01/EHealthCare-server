@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Specialites } from '@prisma/client';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import sendResponse from 'src/utils/sendResponse';
 
 @Injectable()
 export class SpecialtiesService {
@@ -27,5 +28,35 @@ export class SpecialtiesService {
       data: { ...payload, icon },
     });
     return data;
+  }
+
+  async getAllSpecilities() {
+    const specilities = await this.prismaService.specialites.findMany({});
+    return sendResponse({
+      data: specilities,
+      message: 'Specilities retrieved successfully',
+      success: true,
+      status: 200,
+    });
+  }
+
+  async deleteSpecility(specilityId: string) {
+    const speciality = await this.prismaService.specialites.findUnique({
+      where: { id: specilityId },
+    });
+
+    if (!speciality) {
+      throw new HttpException('Specility not found', HttpStatus.NOT_FOUND);
+    }
+
+    const data = await this.prismaService.specialites.delete({
+      where: { id: specilityId },
+    });
+    return sendResponse({
+      message: 'Specility deleted successfully',
+      data,
+      success: true,
+      status: 200,
+    });
   }
 }

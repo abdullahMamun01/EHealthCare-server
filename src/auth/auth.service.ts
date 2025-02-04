@@ -52,13 +52,13 @@ export class AuthService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const user = await this.prismaService[isExist.role.toLowerCase()].findUnique({
+    const user = await this.prismaService[
+      isExist.role.toLowerCase()
+    ].findUnique({
       where: {
         email: isExist.email,
       },
     });
-
-
 
     const isPasswordMatch = await this.jwtService.comparePassword(
       payload.password,
@@ -71,6 +71,7 @@ export class AuthService {
 
     const token = await this.jwtService.accessToken({
       id: isExist.id,
+      [`${isExist.role.toLowerCase()}_id`]: user.id,
       email: isExist.email,
       role: isExist.role,
       name: user.name,
