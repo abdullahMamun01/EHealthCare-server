@@ -9,10 +9,15 @@ export class DoctorService {
   constructor(
     private readonly prismaService: PrismaService,
     private paginationService: PaginationService,
-  ) {}
+  ) {
+    this.paginationService.setModel('doctor');
+  }
 
   async getAllDoctors(query: Record<string, unknown>) {
-    return this.paginationService.paginate('doctor', query);
+
+    const search = query.searchTerm || ""
+  
+    return await this.paginationService.paginate(query).search(search as string, ['name'] ,).execute();
   }
 
   async createAppointment() {}
