@@ -5,7 +5,6 @@ import { PaginationService } from 'src/pagination/pagination.service';
 import { PaginationModule } from 'src/pagination/pagination.module';
 
 @Module({
-  imports: [PaginationModule],
   controllers: [DoctorController],
   providers: [DoctorService, PaginationService],
 })

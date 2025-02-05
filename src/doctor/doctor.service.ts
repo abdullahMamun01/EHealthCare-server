@@ -16,11 +16,21 @@ export class DoctorService {
 
   async getAllDoctors(query: Record<string, unknown>) {
     const search = query.searchTerm || '';
-
     return await this.paginationService
       .paginate(query)
       .search(search as string, ['name'])
-      .execute();
+      .nestedFilters('specialities')
+      .execute({
+        doctorSpecielites: {
+          include: {
+            doctorId: false,
+            specialitesId: false,
+            createdAt: false,
+            updatedAt: false,
+            specialites: true,
+          },
+        },
+      });
   }
 
   // async createAppointment() {}
@@ -32,7 +42,10 @@ export class DoctorService {
     });
 
     if (!doctorExists) {
-      throw new HttpException(`Doctor with ID ${doctorId} does not exist` , HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `Doctor with ID ${doctorId} does not exist`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const specialitesIds = specialities
@@ -57,20 +70,24 @@ export class DoctorService {
       .map((id) => id.specialtiesId);
 
     const transaction = await this.prismaService.$transaction(async (tx) => {
-      await tx.doctorSpecielites.deleteMany({
-        where: {
-          specialitesId: {
-            in: deleteSpecialtiesIds,
+      if (deleteSpecialtiesIds.length > 0) {
+        await tx.doctorSpecielites.deleteMany({
+          where: {
+            specialitesId: {
+              in: deleteSpecialtiesIds,
+            },
           },
-        },
-      });
-      // console.log('hello',specialitesId.map((id) => ({ specialitesId: id, doctorId })))
+        });
+      }
 
-      const createSpecialities = await tx.doctorSpecielites.createMany({
-        data: specialitesIds.map((id) => ({ specialitesId: id, doctorId })),
-        // skipDuplicates: true,
-      });
-      return createSpecialities;
+      if (specialitesIds.length > 0) {
+        const createSpecialities = await tx.doctorSpecielites.createMany({
+          data: specialitesIds.map((id) => ({ specialitesId: id, doctorId })),
+          skipDuplicates: true,
+        });
+        return createSpecialities;
+      }
+      return null;
     });
 
     return sendResponse({

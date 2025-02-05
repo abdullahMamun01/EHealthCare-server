@@ -188,8 +188,6 @@ enum AppointmentStatus {
 
 model Schedule {
   id              String            @id @default(uuid())
-  startDate       DateTime
-  endDate         DateTime
   startTime       DateTime
   endTime         DateTime
   createdAt       DateTime          @default(now())

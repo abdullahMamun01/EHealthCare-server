@@ -19,6 +19,8 @@ import { PatientModule } from './patient/patient.module';
 import { UserModule } from './user/user.module';
 import { PaginationModule } from './pagination/pagination.module';
 import { SpecialtiesModule } from './specialties/specialties.module';
+import { AppointmentModule } from './appointment/appointment.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { SpecialtiesModule } from './specialties/specialties.module';
     UserModule,
     PaginationModule,
     SpecialtiesModule,
+    AppointmentModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [

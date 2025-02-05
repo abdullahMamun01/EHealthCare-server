@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Patient } from '@prisma/client';
+import { PrismaClient, Patient, Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/prisma/prisma.service';
 import sendResponse from 'src/utils/sendResponse';
 
@@ -17,6 +18,7 @@ export class PaginationService {
   }
   paginate(paginateQuery: any) {
     this.paginateQuery = paginateQuery;
+
     return this;
   }
 
@@ -46,6 +48,29 @@ export class PaginationService {
     return this;
   }
 
+  nestedFilters(filteringName: string) {
+    if (this.paginateQuery[filteringName] && filteringName === 'specialities') {
+      const specialties = this.paginateQuery[filteringName].split(',');
+      this.queryFilters.AND = {
+        doctorSpecielites: {
+          some: {
+            specialites: {
+              OR: specialties.map((speciality) => ({
+                name: {
+                  contains: speciality,
+                  mode: 'insensitive',
+                },
+              })),
+            },
+          },
+        },
+      };
+    } else {
+      this.queryFilters.AND = {};
+    }
+
+    return this;
+  }
   async sortBy(orderBy: string = 'date_asc') {
     let field = 'createdAt';
     let order: 'asc' | 'desc' = 'asc';
@@ -67,25 +92,32 @@ export class PaginationService {
     return this;
   }
 
-  async execute() {
-    const { page = 1, limit } = this.paginateQuery;
-    const wherAndOrder = {
-      where: this.queryFilters.OR ? { OR: this.queryFilters.OR } : {},
+  async execute<T extends keyof PrismaClient>(
+    queryIncludes?: Prisma.Args<PrismaClient[T], 'findMany'>['include'],
+  ) {
+    if (!this.model) {
+      throw new Error('Model is not set. Call setModel() first.');
+    }
+
+    const { page = 1, limit = 10 } = this.paginateQuery;
+    const whereAndOrder = {
+      where: { OR: this.queryFilters.OR, AND: this.queryFilters.AND },
       orderBy: this.queryFilters.orderBy,
     };
 
-    this.totalRecords = await this.model.count(wherAndOrder);
-
+    this.totalRecords = await this.model.count(whereAndOrder);
     this.computeMetaData(+page, +limit);
+
     const data = await this.model.findMany({
-      ...wherAndOrder,
+      ...whereAndOrder,
       skip: (+page - 1) * +limit,
       take: +limit,
+      include: queryIncludes, // ✅ Fully type-safe
     });
 
     return {
       ...sendResponse({
-        message: `All  data retrieve successfull`,
+        message: `All data retrieved successfully`,
         success: true,
         data,
         status: 200,
