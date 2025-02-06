@@ -5,7 +5,9 @@ import {
   addMinutes,
   differenceInDays,
   differenceInMinutes,
+  endOfDay,
   parse,
+  startOfDay,
 } from 'date-fns';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ScheduleDto } from './dto/schedule.dot';
@@ -35,7 +37,9 @@ export class ScheduleService {
       return generateSchedules(date, totalHours);
     }).flat();
 
-    const alreadySchedule = await this.getSchedulesByTime(schedules as Schedule[]);
+    const alreadySchedule = await this.getSchedulesByTime(
+      schedules as Schedule[],
+    );
 
     if (alreadySchedule.length > 0) {
       throw new HttpException('Schedule already exists', HttpStatus.CONFLICT);
@@ -51,7 +55,7 @@ export class ScheduleService {
       message: 'Schedule created successfully',
       success: true,
       status: 200,
-      data
+      data,
     });
   }
 
@@ -66,21 +70,44 @@ export class ScheduleService {
     });
   }
 
-
-  async getAllSchedules(startDate: Date, endDate: Date) {
-    return this.prismaService.schedule.findMany({
+  async getAllSchedules(startDate?: Date, endDate?: Date) {
+    const currentDate = addDays(new Date(), 0);
+    const startDateTime = startDate ? startOfDay(startDate) : startOfDay(currentDate);
+    const endDateTime = endOfDay(endDate ?? startDate ?? currentDate)
+    const schedules = await this.prismaService.schedule.findMany({
       where: {
-        OR: [
-          { startTime: { gte: startDate, lte: endDate } },
-          { endTime: { gte: startDate, lte: endDate } }, 
-          {
-            AND: [
-              { startTime: { lte: startDate } }, 
-              { endTime: { gte: endDate } }, 
-            ],
-          },
-        ],
+        startTime: { gte: startDateTime },
+         endTime: { lte: endDateTime } ,
+      },      
+      orderBy: {
+        startTime: 'asc',
       },
+    });
+    return sendResponse({
+      message: 'Schedules retrieved successfully',
+      success: true,
+      status: 200,
+      data: {total:schedules.length,schedules },
+    })
+  }
+
+  async deletedScheduleById(scheduleId: string) {
+    await this.prismaService.schedule.findUniqueOrThrow({
+      where : {
+        id : scheduleId
+      }
+    })
+    const deleteSchedule = await this.prismaService.schedule.delete({
+      where: {
+        id: scheduleId
+      }
+    })
+
+    return sendResponse({
+      message: 'Schedule deleted successfully',
+      success: true,
+      status: 200,
+      data: deleteSchedule,
     });
   }
 }

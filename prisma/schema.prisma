@@ -82,6 +82,9 @@ model Doctor {
   address           String
   country           String
   licenseNo         String
+  biography         String?
+  workingIn         String?
+  degrees           String?
   consultationFee   Int           @default(0)
   isDeleted         Boolean       @default(false)
   avgRating         Float         @default(0.0)

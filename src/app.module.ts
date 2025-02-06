@@ -21,6 +21,7 @@ import { PaginationModule } from './pagination/pagination.module';
 import { SpecialtiesModule } from './specialties/specialties.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     SpecialtiesModule,
     AppointmentModule,
     ScheduleModule,
+    DoctorScheduleModule,
   ],
   controllers: [AppController],
   providers: [
