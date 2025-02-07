@@ -22,6 +22,7 @@ import { SpecialtiesModule } from './specialties/specialties.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module';
+import { AgoraModule } from './agora/agora.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module';
     AppointmentModule,
     ScheduleModule,
     DoctorScheduleModule,
+    AgoraModule,
   ],
   controllers: [AppController],
   providers: [

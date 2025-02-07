@@ -204,13 +204,13 @@ model Schedule {
 model DoctorSchedules {
   doctorId      String
   scheduleId    String
-  appointmentId String      @unique
-  isBooked      Boolean
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  doctor        Doctor      @relation(fields: [doctorId], references: [id])
-  schedule      Schedule    @relation(fields: [scheduleId], references: [id])
-  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  appointmentId String?      @unique
+  isBooked      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  doctor        Doctor       @relation(fields: [doctorId], references: [id])
+  schedule      Schedule     @relation(fields: [scheduleId], references: [id])
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
 
   @@id([doctorId, scheduleId])
   @@map("doctor_schedules")

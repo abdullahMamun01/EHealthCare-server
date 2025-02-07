@@ -8,4 +8,6 @@ export default registerAs('config', () => ({
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinaryApikey: process.env.CLOUDINARY_API_KEY,
   cloudinarySecretkey: process.env.CLOUDINARY_API_SECRET,
+  agoraAppId: process.env.AGORA_APP_ID,
+  agoraCertificate: process.env.AGORA_APP_CERTIFICATE
 }));
