@@ -18,7 +18,7 @@ export class DoctorScheduleService {
       schedules,
     );
     const existingIds = new Set(existingSchedules.map((s) => s.scheduleId));
-    
+
     // Filter schedules that do not exist
     const createAbleScheduleIds = schedules.filter(
       (id) => !existingIds.has(id),
@@ -55,5 +55,26 @@ export class DoctorScheduleService {
       },
     });
     return schedules;
+  }
+
+  async doctorSchedule(doctorId: string) {
+    await this.prismaService.doctor.findFirstOrThrow({
+      where: {
+        id: doctorId,
+      },
+    });
+
+    const schedules = await this.prismaService.doctorSchedules.findMany({
+      where: {
+        doctorId,
+      },
+    });
+
+    return sendResponse({
+      data: schedules,
+      message: 'Schedules retrieved successfully',
+      success: true,
+      status: 200,
+    });
   }
 }

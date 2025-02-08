@@ -31,6 +31,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         success: false,
       });
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(exception.code)
       this.logger.error(`Prisma Error: ${exception.message}`);
       console.log(exception.code);
       let message = '';

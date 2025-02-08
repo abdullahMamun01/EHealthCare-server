@@ -1,4 +1,137 @@
-import { Injectable } from '@nestjs/common';
-
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { AppointmentDto } from './dto/appointment.dto';
+import { Appointment, DoctorSchedules } from '@prisma/client';
+import { v4 as uuid4 } from 'uuid';
+import sendResponse from 'src/utils/sendResponse';
+import { Role } from 'src/guard/role/roles.decorator';
+import { PaginationService } from 'src/pagination/pagination.service';
 @Injectable()
-export class AppointmentService {}
+export class AppointmentService {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly paginationService: PaginationService,
+  ) {
+    this.paginationService.setModel('appointment');
+  }
+
+  async createAppointment(payload: AppointmentDto, patientId: string) {
+    // await this.prismaService.appointment.deleteMany()
+    const appointment = await this.prismaService.appointment.findFirst({
+      where: {
+        doctorId: payload.doctorId,
+        scheduleId: payload.scheduleId,
+        status: {
+          not: 'CANCELED',
+        },
+      },
+    });
+    if (appointment) {
+      throw new HttpException(
+        'Appointment already exists for the given doctor and schedule.',
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const transaction = await this.prismaService.$transaction(async (tx) => {
+      const appointment = await tx.appointment.create({
+        data: {
+          patientId,
+          doctorId: payload.doctorId,
+          problemDescription: payload?.problemDescription || '',
+          videoCallingId: uuid4(),
+          scheduleId: payload.scheduleId,
+        } as Appointment,
+      });
+
+      await tx.doctorSchedules.update({
+        where: {
+          doctorId_scheduleId: {
+            doctorId: payload.doctorId as string,
+            scheduleId: payload.scheduleId,
+          },
+        },
+        data: {
+          appointmentId: appointment.id,
+        },
+      });
+
+      return appointment;
+    });
+
+    return sendResponse({
+      message: 'Appointment created successfully',
+      data: transaction,
+      success: true,
+      status: 200,
+    });
+  }
+  async cancelAppointment(appointmentId: string, patient_id: string) {
+    const appointment = await this.prismaService.appointment.findUniqueOrThrow({
+      where: { id: appointmentId, patientId: patient_id },
+    });
+    if (appointment.status !== 'CONFIRMED') {
+      throw new HttpException(
+        'Appointment is not CONFIRMED',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const transaction = await this.prismaService.$transaction(async (tx) => {
+      const cancelAppointment = await tx.appointment.update({
+        where: {
+          id: appointmentId,
+          patientId: patient_id,
+        },
+        data: {
+          status: 'CANCELED',
+        },
+      });
+
+      const cancelDoctorAppointment = await tx.doctorSchedules.update({
+        where: {
+          doctorId_scheduleId: {
+            doctorId: cancelAppointment.doctorId,
+            scheduleId: cancelAppointment.scheduleId,
+          },
+        },
+        data: {
+          appointmentId: null,
+          isBooked: false,
+        },
+      });
+
+      return cancelAppointment;
+    });
+
+    return sendResponse({
+      message: 'Appointment canceled successfully',
+      data: transaction,
+      success: true,
+      status: 200,
+    });
+  }
+
+  async getAllAppointments(
+    role: Role,
+    user: any,
+    query: Record<string, unknown>,
+  ) {
+    const filterConditions  = [];
+    if (role === 'PATIENT') {
+      filterConditions .push({
+        fieldName: 'patientId',
+        value: user.patientId,
+      });
+    } else if (role === 'DOCTOR') {
+      filterConditions .push({
+        fieldName: 'doctorId',
+        value: user.doctorId,
+      });
+    }
+
+    return await this.paginationService
+      .paginate(query)
+      .find(filterConditions )
+      .execute();
+  }
+}

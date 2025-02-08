@@ -48,6 +48,21 @@ export class PaginationService {
     return this;
   }
 
+  find(fields: { fieldName: string; value: string | number | boolean }[]) {
+ 
+    if (fields && fields.length > 0) {
+      this.queryFilters.filters = fields.reduce((acc, curr) => {
+
+        acc[curr.fieldName] = curr.value;
+        return acc;
+      }, {});
+    } else {
+      this.queryFilters.filters = {};
+    }
+
+    return this
+  }
+
   nestedFilters(filteringName: string) {
     if (this.paginateQuery[filteringName] && filteringName === 'specialities') {
       const specialties = this.paginateQuery[filteringName].split(',');
@@ -100,19 +115,24 @@ export class PaginationService {
     }
 
     const { page = 1, limit = 10 } = this.paginateQuery;
+    const filters = this.queryFilters.filters || {};
     const whereAndOrder = {
-      where: { OR: this.queryFilters.OR, AND: this.queryFilters.AND },
+      where: {
+        ...(this.queryFilters.OR?.length ? { OR: this.queryFilters.OR } : {}),
+        ...(this.queryFilters.AND?.length ? { AND: this.queryFilters.AND } : {}),
+        ...filters,
+      },
       orderBy: this.queryFilters.orderBy,
     };
 
     this.totalRecords = await this.model.count(whereAndOrder);
     this.computeMetaData(+page, +limit);
-
+    console.log(this.queryFilters.filters)
     const data = await this.model.findMany({
       ...whereAndOrder,
       skip: (+page - 1) * +limit,
       take: +limit,
-      include: queryIncludes, // ✅ Fully type-safe
+      include: queryIncludes, 
     });
 
     return {

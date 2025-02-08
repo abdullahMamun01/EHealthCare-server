@@ -153,18 +153,18 @@ enum MetarialStatus {
 }
 
 model Appointment {
-  id             String            @id @default(uuid())
-  patientId      String
-  doctorId       String
-  scheduleId     String
-  videoCallingId String
-  status         AppointmentStatus
-  paymentStatus  PaymentStatus
-  updatedAt      DateTime          @default(now())
-  createdAt      DateTime          @default(now())
-
-  doctor  Doctor  @relation(fields: [doctorId], references: [id])
-  patient Patient @relation(fields: [patientId], references: [id])
+  id                 String            @id @default(uuid())
+  patientId          String
+  doctorId           String
+  scheduleId         String
+  videoCallingId     String
+  status             AppointmentStatus @default(PENDING)
+  paymentStatus      PaymentStatus     @default(PENDING)
+  updatedAt          DateTime          @default(now())
+  createdAt          DateTime          @default(now())
+  problemDescription String?
+  doctor             Doctor            @relation(fields: [doctorId], references: [id])
+  patient            Patient           @relation(fields: [patientId], references: [id])
 
   schedule        Schedule         @relation(fields: [scheduleId], references: [id])
   doctorSchedules DoctorSchedules?
@@ -186,6 +186,7 @@ enum AppointmentStatus {
   PENDING
   CONFIRMED
   CANCELED
+  ONGOING
   COMPLETED
 }
 
