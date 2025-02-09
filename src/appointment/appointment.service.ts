@@ -6,6 +6,12 @@ import { v4 as uuid4 } from 'uuid';
 import sendResponse from 'src/utils/sendResponse';
 import { Role } from 'src/guard/role/roles.decorator';
 import { PaginationService } from 'src/pagination/pagination.service';
+import {
+  addDays,
+  differenceInHours,
+  differenceInMinutes,
+  subMinutes,
+} from 'date-fns';
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -111,19 +117,78 @@ export class AppointmentService {
     });
   }
 
+  async cancelAllPendingAppointment() {
+    await this.prismaService.$transaction(async (tx) => {
+      // Fetch pending appointments 
+      const findPendingAppointments = await tx.appointment.findMany({
+        where: {
+          status: 'PENDING',
+          paymentStatus: 'PENDING',
+          createdAt: {
+            lte: subMinutes(new Date(), 29),
+          },
+        },
+        select: {
+          id: true,
+          doctorId: true,
+          scheduleId: true,
+        },
+      });
+  
+      // Extract ids 
+      const appointmentIds = findPendingAppointments.map((appointment) => appointment.id);
+      const doctorAndScheduleIds = findPendingAppointments.map((appointment) => ({
+        doctorId: appointment.doctorId,
+        scheduleId: appointment.scheduleId,
+      }));
+  
+      // Update all pending appointments
+      await tx.appointment.updateMany({
+        where: {
+          id: { in: appointmentIds },
+        },
+        data: {
+          status: 'CANCELED',
+        },
+      });
+  
+      await tx.doctorSchedules.updateMany({
+        where: {
+          OR: doctorAndScheduleIds.map((appointment) => ({
+            doctorId: appointment.doctorId,
+            scheduleId: appointment.scheduleId,
+          })),
+        },
+        data: {
+          isBooked: false,
+          appointmentId: null,
+        },
+      });
+    });
+
+    return sendResponse({
+      message: 'All pending appointments have been canceled',
+      data: [],
+      success: true,
+      status: 200,
+    });
+  }
+  
+  
+
   async getAllAppointments(
     role: Role,
     user: any,
     query: Record<string, unknown>,
   ) {
-    const filterConditions  = [];
+    const filterConditions = [];
     if (role === 'PATIENT') {
-      filterConditions .push({
+      filterConditions.push({
         fieldName: 'patientId',
         value: user.patientId,
       });
     } else if (role === 'DOCTOR') {
-      filterConditions .push({
+      filterConditions.push({
         fieldName: 'doctorId',
         value: user.doctorId,
       });
@@ -131,7 +196,7 @@ export class AppointmentService {
 
     return await this.paginationService
       .paginate(query)
-      .find(filterConditions )
+      .find(filterConditions)
       .execute();
   }
 }

@@ -12,6 +12,7 @@ import { AppointmentService } from './appointment.service';
 import { Role, Roles } from 'src/guard/role/roles.decorator';
 import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { AppointmentDto, appointmentSchema } from './dto/appointment.dto';
+import { Public } from 'src/auth/metadata';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -29,7 +30,7 @@ export class AppointmentController {
     );
   }
   @Roles(Role.User)
-  @Patch(':appointmentId')
+  @Patch(':appointmentId/cancel')
   async cancelAppointment(
     @Param('appointmentId') appointmentId: string,
     @Request() req: any,
@@ -44,5 +45,11 @@ export class AppointmentController {
   @Get()
   async allAppointments(@Request() req: any) {
     return this.appointmentService.getAllAppointments(req.user.role, req.user, req.query)
+  }
+
+  @Public()
+  @Get('cancelled')
+  async cancelledAppointments(@Request() req: any) {
+    return this.appointmentService.cancelAllPendingAppointment()
   }
 }

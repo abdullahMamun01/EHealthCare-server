@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DoctorSchedules } from '@prisma/client';
+import { addDays, addMinutes, startOfDay, subMinutes } from 'date-fns';
 import { PrismaService } from 'src/prisma/prisma.service';
 import sendResponse from 'src/utils/sendResponse';
 
@@ -67,6 +68,32 @@ export class DoctorScheduleService {
     const schedules = await this.prismaService.doctorSchedules.findMany({
       where: {
         doctorId,
+      },
+    });
+
+    return sendResponse({
+      data: schedules,
+      message: 'Schedules retrieved successfully',
+      success: true,
+      status: 200,
+    });
+  }
+
+  async getAllDoctorSchedule() {
+    const schedules = await this.prismaService.doctorSchedules.findMany({
+      where: {
+        schedule: {
+          startTime: {
+            gte: startOfDay(new Date()),
+          },
+        },
+      },
+      select: {
+        appointmentId: false,
+        doctorId: true,
+        scheduleId: true,
+        isBooked: true,
+        createdAt: true,
       },
     });
 

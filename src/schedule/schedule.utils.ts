@@ -9,7 +9,7 @@ import { addMinutes } from "date-fns";
       startTime: Date,
       totalHours: number,
     ): Schedule[] => {
-      console.log(startTime, totalHours);
+
       return Array(totalHours * 2)
         .fill(null)
         .map((_, i) => {

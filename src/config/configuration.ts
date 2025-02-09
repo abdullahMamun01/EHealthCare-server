@@ -9,5 +9,10 @@ export default registerAs('config', () => ({
   cloudinaryApikey: process.env.CLOUDINARY_API_KEY,
   cloudinarySecretkey: process.env.CLOUDINARY_API_SECRET,
   agoraAppId: process.env.AGORA_APP_ID,
-  agoraCertificate: process.env.AGORA_APP_CERTIFICATE
+  agoraCertificate: process.env.AGORA_APP_CERTIFICATE,
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+  },
 }));

@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import { DoctorScheduleService } from './doctor-schedule.service';
 import { Role, Roles } from 'src/guard/role/roles.decorator';
+import { Public } from 'src/auth/metadata';
 
 @Controller('doctor-schedules')
 export class DoctorScheduleController {
@@ -19,5 +20,10 @@ export class DoctorScheduleController {
   @Get()
   async getDcotorsSchedule(@Request() req: any) {
     return this.doctorScheduleService.doctorSchedule(req.user.doctor_id);
+  }
+  @Public()
+  @Get('availability')
+  async getDoctorAvailability() {
+    return this.doctorScheduleService.getAllDoctorSchedule();
   }
 }

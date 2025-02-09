@@ -8,6 +8,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { extractErrorPaths } from 'src/utils/zodErrorsPath';
+import Stripe from 'stripe';
 import { ZodError } from 'zod';
 
 @Catch()
@@ -70,7 +71,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         success: false,
       });
     }
-
+  
     // Default error handling for other cases
     this.logger.error(exception?.message || 'Unexpected error');
     response.status(status).json({

@@ -23,6 +23,9 @@ import { AppointmentModule } from './appointment/appointment.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module';
 import { AgoraModule } from './agora/agora.module';
+import { StripeService } from './stripe/stripe.service';
+import { StripeModule } from './stripe/stripe.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -44,6 +47,8 @@ import { AgoraModule } from './agora/agora.module';
     ScheduleModule,
     DoctorScheduleModule,
     AgoraModule,
+    StripeModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [
@@ -57,6 +62,7 @@ import { AgoraModule } from './agora/agora.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    StripeService,
   ],
 })
 export class AppModule {}

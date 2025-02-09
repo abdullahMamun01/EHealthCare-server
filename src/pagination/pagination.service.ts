@@ -127,7 +127,6 @@ export class PaginationService {
 
     this.totalRecords = await this.model.count(whereAndOrder);
     this.computeMetaData(+page, +limit);
-    console.log(this.queryFilters.filters)
     const data = await this.model.findMany({
       ...whereAndOrder,
       skip: (+page - 1) * +limit,
