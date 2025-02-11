@@ -34,4 +34,10 @@ cloudinaryApikey: process.env.CLOUDINARY_API_KEY,
       return streamifier.createReadStream(file.buffer).pipe(upload);
     });
   }
+
+  uploadImageFromUrl(
+    url: string,
+  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
+    return cloudinary.uploader.upload(url);
+  }
 }

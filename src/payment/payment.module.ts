@@ -10,6 +10,11 @@ import { PaginationService } from 'src/pagination/pagination.service';
 @Module({
   imports: [],
   controllers: [PaymentController],
-  providers: [PaymentService , StripeService, AppointmentService,PaginationService],
+  providers: [
+    PaymentService,
+    StripeService,
+    AppointmentService,
+    PaginationService,
+  ],
 })
 export class PaymentModule {}

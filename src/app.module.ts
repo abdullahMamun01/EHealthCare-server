@@ -26,6 +26,7 @@ import { AgoraModule } from './agora/agora.module';
 import { StripeService } from './stripe/stripe.service';
 import { StripeModule } from './stripe/stripe.module';
 import { PaymentModule } from './payment/payment.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { PaymentModule } from './payment/payment.module';
     AgoraModule,
     StripeModule,
     PaymentModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [
