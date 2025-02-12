@@ -40,10 +40,16 @@ export class AuthService {
       return patient;
     });
 
-    return transaction; // Return the created user instead of just the email
+    return sendResponse({
+      status: 201,
+      success: true,
+      message: 'User created successfully',
+      data: transaction,
+    }); // Return the created user instead of just the email
   }
 
   async signin(payload: LoginDto) {
+
     const isExist = await this.prismaService.user.findUnique({
       where: { email: payload.email },
     });

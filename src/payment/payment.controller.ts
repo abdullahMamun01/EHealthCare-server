@@ -5,7 +5,7 @@ import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { paymentSchema } from './dto/payment.dto';
 import { Role, Roles } from 'src/guard/role/roles.decorator';
 
-@Controller('payment')
+@Controller('payments')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
   @Roles(Role.User)

@@ -15,10 +15,24 @@ export class PaymentService {
 
   async createPayment(payload: PaymentDto, patientId: string) {
     const { doctorId, scheduleId, problemDescription } = payload;
-    const appointment = await this.appointmentService.createAppointment(
-      { doctorId, scheduleId, problemDescription },
-      patientId,
-    );
+    const appointment = await this.prismaService.appointment.findFirst({
+      where: {
+        doctorId,
+        scheduleId,
+        status: 'PENDING',
+      },
+    });
+    let createAppointment: any;
+    if (appointment) {
+      createAppointment = appointment;
+    } else {
+      createAppointment = (
+        await this.appointmentService.createAppointment(
+          { doctorId, scheduleId, problemDescription },
+          patientId,
+        )
+      ).data;
+    }
 
     const paymentIntent = await this.stripeService.createCheckoutSession(
       [
@@ -30,7 +44,7 @@ export class PaymentService {
         },
       ],
       {
-        appointmentId: appointment.data.id as string,
+        appointmentId: createAppointment.id as string,
         patientId,
       },
     );

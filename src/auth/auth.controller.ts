@@ -18,11 +18,13 @@ import {
 import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { Public } from './metadata';
 import { Role, Roles } from 'src/guard/role/roles.decorator';
+import { AuthSwagger } from './swagger/auth.swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @AuthSwagger.createUser()
   @Public()
   @Post('signup')
   @UsePipes(new ZodValidationPipe(registerSchema))
@@ -30,6 +32,7 @@ export class AuthController {
     return this.authService.signup(registerDto);
   }
 
+  @AuthSwagger.singinUser()
   @Public()
   @Post('signin')
   @UsePipes(new ZodValidationPipe(loginSchema))

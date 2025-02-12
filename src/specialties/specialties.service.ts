@@ -24,10 +24,15 @@ export class SpecialtiesService {
       icon = result.url;
     }
 
-    const data = this.prismaService.specialites.create({
+    const data = await this.prismaService.specialites.create({
       data: { ...payload, icon },
     });
-    return data;
+    return sendResponse({
+      message: 'Specility created successfully',
+      data,
+      success: true,
+      status: 201,
+    });
   }
 
   async getAllSpecilities() {

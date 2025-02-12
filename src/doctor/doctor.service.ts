@@ -48,6 +48,16 @@ export class DoctorService {
       );
     }
 
+    const findSpecialities = await this.prismaService.specialites.findMany({
+      where: {
+        id: {
+          in: specialities.map((speciality) => speciality.specialtiesId),
+        },
+      },
+    });
+    if (findSpecialities.length === 0) {
+      throw new HttpException('Speciality not found', HttpStatus.NOT_FOUND);
+    }
     const specialitesIds = specialities
       .filter((id) => id.isDeleted === false)
       .map((id) => id.specialtiesId);
@@ -65,6 +75,7 @@ export class DoctorService {
     if (docSpecialities.length > 0) {
       throw new HttpException('Speciality already exists', HttpStatus.CONFLICT);
     }
+
     const deleteSpecialtiesIds = specialities
       .filter((id) => id.isDeleted === true)
       .map((id) => id.specialtiesId);

@@ -43,8 +43,8 @@ export class AdminController {
     @UploadedFile() file: Express.Multer.File,
     @Body(new ZodValidationPipe(adminSchema)) createAdminDto: CreateAdminDto,
   ) {
-    let photoUrl = '';
+  
 
-    return createAdminDto;
+    return this.adminService.createAdmin(createAdminDto, file);
   }
 }

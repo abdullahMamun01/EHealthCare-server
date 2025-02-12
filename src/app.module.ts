@@ -3,10 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { JwtAuthModule } from './jwt-auth/jwt-auth.module';
-
 import configuration from './config/configuration';
-import { JwtAuthService } from './jwt-auth/jwt-auth.service';
 import { JwtConfigModule } from './jwt-auth/JwtConfigModule';
 import { PrismaModule } from './prisma/prisma.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -59,7 +56,6 @@ import { MetaModule } from './meta/meta.module';
   controllers: [AppController],
   providers: [
     AppService,
-
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
