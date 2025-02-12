@@ -17,7 +17,7 @@ CREATE TYPE "MetarialStatus" AS ENUM ('SINGLE', 'MARRIED', 'DIVORCED');
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'CANCELED', 'REFUNDED');
 
 -- CreateEnum
-CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELED', 'COMPLETED');
+CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELED', 'ONGOING', 'COMPLETED');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -62,6 +62,9 @@ CREATE TABLE "doctors" (
     "address" TEXT NOT NULL,
     "country" TEXT NOT NULL,
     "licenseNo" TEXT NOT NULL,
+    "biography" TEXT,
+    "workingIn" TEXT,
+    "degrees" TEXT,
     "consultationFee" INTEGER NOT NULL DEFAULT 0,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "avgRating" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
@@ -111,10 +114,11 @@ CREATE TABLE "appointments" (
     "doctorId" TEXT NOT NULL,
     "scheduleId" TEXT NOT NULL,
     "videoCallingId" TEXT NOT NULL,
-    "status" "AppointmentStatus" NOT NULL,
-    "paymentStatus" "PaymentStatus" NOT NULL,
+    "status" "AppointmentStatus" NOT NULL DEFAULT 'PENDING',
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "problemDescription" TEXT,
 
     CONSTRAINT "appointments_pkey" PRIMARY KEY ("id")
 );
@@ -122,8 +126,6 @@ CREATE TABLE "appointments" (
 -- CreateTable
 CREATE TABLE "schedules" (
     "id" TEXT NOT NULL,
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "endDate" TIMESTAMP(3) NOT NULL,
     "startTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -136,8 +138,8 @@ CREATE TABLE "schedules" (
 CREATE TABLE "doctor_schedules" (
     "doctorId" TEXT NOT NULL,
     "scheduleId" TEXT NOT NULL,
-    "appointmentId" TEXT NOT NULL,
-    "isBooked" BOOLEAN NOT NULL,
+    "appointmentId" TEXT,
+    "isBooked" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -162,7 +164,7 @@ CREATE TABLE "prescriptions" (
     "patientId" TEXT NOT NULL,
     "appointmentId" TEXT NOT NULL,
     "doctorId" TEXT NOT NULL,
-    "Instruction" TEXT NOT NULL,
+    "instruction" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -173,7 +175,6 @@ CREATE TABLE "prescriptions" (
 CREATE TABLE "specialites" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
     "icon" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -241,6 +242,9 @@ CREATE UNIQUE INDEX "doctor_schedules_appointmentId_key" ON "doctor_schedules"("
 CREATE UNIQUE INDEX "prescriptions_appointmentId_key" ON "prescriptions"("appointmentId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "specialites_name_key" ON "specialites"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "reviews_appointmentId_key" ON "reviews"("appointmentId");
 
 -- CreateIndex
@@ -274,7 +278,7 @@ ALTER TABLE "doctor_schedules" ADD CONSTRAINT "doctor_schedules_doctorId_fkey" F
 ALTER TABLE "doctor_schedules" ADD CONSTRAINT "doctor_schedules_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "schedules"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "doctor_schedules" ADD CONSTRAINT "doctor_schedules_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "appointments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "doctor_schedules" ADD CONSTRAINT "doctor_schedules_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "appointments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "medicleReports" ADD CONSTRAINT "medicleReports_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "patients"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
