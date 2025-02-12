@@ -27,6 +27,8 @@ import { StripeService } from './stripe/stripe.service';
 import { StripeModule } from './stripe/stripe.module';
 import { PaymentModule } from './payment/payment.module';
 import { ReviewModule } from './review/review.module';
+import { PrescriptionModule } from './prescription/prescription.module';
+import { MetaModule } from './meta/meta.module';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { ReviewModule } from './review/review.module';
     StripeModule,
     PaymentModule,
     ReviewModule,
+    PrescriptionModule,
+    MetaModule,
   ],
   controllers: [AppController],
   providers: [

@@ -235,7 +235,7 @@ model Prescription {
   patientId     String
   appointmentId String   @unique
   doctorId      String
-  Instruction   String
+  instruction   String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

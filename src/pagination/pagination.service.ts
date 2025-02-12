@@ -141,7 +141,7 @@ export class PaginationService {
         data,
         status: 200,
       }),
-      metadata: this.metadata,
+      ...(data.length > 0 && {metadata: this.metadata}),
     };
   }
 }

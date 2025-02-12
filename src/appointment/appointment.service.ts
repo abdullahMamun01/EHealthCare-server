@@ -119,7 +119,7 @@ export class AppointmentService {
 
   async cancelAllPendingAppointment() {
     await this.prismaService.$transaction(async (tx) => {
-      // Fetch pending appointments 
+      // Fetch pending appointments
       const findPendingAppointments = await tx.appointment.findMany({
         where: {
           status: 'PENDING',
@@ -134,14 +134,18 @@ export class AppointmentService {
           scheduleId: true,
         },
       });
-  
-      // Extract ids 
-      const appointmentIds = findPendingAppointments.map((appointment) => appointment.id);
-      const doctorAndScheduleIds = findPendingAppointments.map((appointment) => ({
-        doctorId: appointment.doctorId,
-        scheduleId: appointment.scheduleId,
-      }));
-  
+
+      // Extract ids
+      const appointmentIds = findPendingAppointments.map(
+        (appointment) => appointment.id,
+      );
+      const doctorAndScheduleIds = findPendingAppointments.map(
+        (appointment) => ({
+          doctorId: appointment.doctorId,
+          scheduleId: appointment.scheduleId,
+        }),
+      );
+
       // Update all pending appointments
       await tx.appointment.updateMany({
         where: {
@@ -151,7 +155,7 @@ export class AppointmentService {
           status: 'CANCELED',
         },
       });
-  
+
       await tx.doctorSchedules.updateMany({
         where: {
           OR: doctorAndScheduleIds.map((appointment) => ({
@@ -173,8 +177,33 @@ export class AppointmentService {
       status: 200,
     });
   }
-  
-  
+
+  async markCompletedAppointments() {
+    const appointments = await this.prismaService.appointment.updateMany({
+      where: {
+        status: 'CONFIRMED',
+        paymentStatus: 'COMPLETED',
+        schedule: {
+          endTime: {
+            lte: new Date(),
+          },
+        },
+      },
+      data: {
+        status: 'COMPLETED',
+      },
+    });
+
+    console.log(appointments)
+
+    return sendResponse({
+      message: 'All confirmed appointments have been updated',
+      data: appointments,
+      success: true,
+      status: 200,
+    });
+ 
+  }
 
   async getAllAppointments(
     role: Role,

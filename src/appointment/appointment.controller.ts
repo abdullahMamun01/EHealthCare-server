@@ -14,7 +14,7 @@ import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { AppointmentDto, appointmentSchema } from './dto/appointment.dto';
 import { Public } from 'src/auth/metadata';
 
-@Controller('appointment')
+@Controller('appointments')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
   @Roles(Role.User)
@@ -51,5 +51,11 @@ export class AppointmentController {
   @Get('cancelled')
   async cancelledAppointments(@Request() req: any) {
     return this.appointmentService.cancelAllPendingAppointment()
+  }
+
+  @Public()
+  @Get('mark-completed')
+  async markCompletedAppointments() {
+    return this.appointmentService.markCompletedAppointments()
   }
 }
