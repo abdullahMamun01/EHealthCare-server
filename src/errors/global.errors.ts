@@ -35,21 +35,21 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       console.log(exception.code);
       let message = '';
       switch (exception.code) {
-        case 'P2000': // Invalid input format or value too long
+        case 'P2000':
           message = 'Invalid input data. Please check the provided values.';
           break;
-        case 'P2025': // Record not found (specific case)
+        case 'P2025':
           message = 'The requested resource was not found.';
           break;
-        case 'P2002': // Unique constraint violation
+        case 'P2002':
           message =
             'A record with this value already exists. Please use a different value.';
           break;
-        case 'P2003': // Foreign key constraint failure
+        case 'P2003':
           message =
             'Invalid reference to another entity. Ensure the related record exists.';
           break;
-        case 'P2001': // Generic record not found error
+        case 'P2001':
           message = 'The specified record does not exist.';
           break;
         default:
