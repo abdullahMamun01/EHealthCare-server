@@ -5,7 +5,7 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../prisma';
 import { Response } from 'express';
 import { ZodError } from 'zod';
 
