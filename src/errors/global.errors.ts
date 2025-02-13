@@ -8,6 +8,7 @@ import {
 import { Prisma  } from '../prisma';
 import { Response } from 'express';
 import { ZodError } from 'zod';
+import { PrismaClientKnownRequestError , PrismaClientValidationError } from '@prisma/client/runtime/library';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -29,7 +30,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         })),
         success: false,
       });
-    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+    } else if (exception instanceof PrismaClientKnownRequestError) {
       console.log(exception.code);
       this.logger.error(`Prisma Error: ${exception.message}`);
       console.log(exception.code);
@@ -62,7 +63,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         success: false,
         errorCode: exception.code,
       });
-    } else if (exception instanceof Prisma.PrismaClientValidationError) {
+    } else if (exception instanceof PrismaClientValidationError) {
       response.status(400).json({
         statusCode: 400,
         message: 'Validation failed. Please check the provided data.',
