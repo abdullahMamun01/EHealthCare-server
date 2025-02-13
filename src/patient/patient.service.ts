@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { MedicleReportsDto, PatientUpdateDto } from './dto/patient.dto';
+import { MedicleReportsDto, PatientHealthDataDto, PatientUpdateDto } from './dto/patient.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { MedicleReports, PatientHealthData, Prisma } from '@prisma/client';
+import {  Prisma, PrismaClient } from '@prisma/client';
 import sendResponse from 'src/utils/sendResponse';
-
+const prisma = new PrismaClient();
 @Injectable()
 export class PatientService {
   constructor(
@@ -52,7 +52,7 @@ export class PatientService {
             patientId,
             reportName: medicleReports.reportName,
             reportLink,
-          } as MedicleReports,
+          } ,
         });
       }
       return;
@@ -84,11 +84,11 @@ export class PatientService {
       where: {
         patientId,
       },
-      update: healthData as Partial<PatientHealthData>,
+      update: healthData ,
       create: {
         patientId,
         ...healthData,
-      } as PatientHealthData,
+      } as Prisma.PatientHealthDataCreateInput,
     });
   }
 
