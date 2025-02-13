@@ -1,6 +1,6 @@
 export interface LineItem {
-    name: string;
-    price: number; // in cents
-    currency: string;
-    quantity: number;
-  }
+  name: string;
+  price: number; // in cents
+  currency: string;
+  quantity: number;
+}

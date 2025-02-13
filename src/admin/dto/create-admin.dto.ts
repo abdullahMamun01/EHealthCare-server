@@ -1,10 +1,5 @@
 import { doctorSchema } from 'src/doctor/dto/update-doctor.dto';
 import { z } from 'zod';
-
-// Enums
-const GenderEnum = z.enum(['MALE', 'FEMALE', 'OTHER']);
-const AccountStatusEnum = z.enum(['ACTIVE', 'INACTIVE', 'BLOCKED']);
-
 // Schema
 export const createDoctorSchema = doctorSchema.extend({
   password: z.string().min(6, 'Password must be at least 6 characters'),

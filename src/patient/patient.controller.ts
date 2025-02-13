@@ -6,16 +6,16 @@ import {
   Param,
   Patch,
   Post,
-  Request,
+  Request as Req,
   UploadedFile,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { Role, Roles } from 'src/guard/role/roles.decorator';
 import { ZodValidationPipe } from 'src/others/zodValidationPipe';
-import { PatientUpdateDto, patientUpdateSchema } from './dto/patient.dto';
+import { patientUpdateSchema } from './dto/patient.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 
 @Controller('patient')
 export class PatientController {
@@ -26,21 +26,19 @@ export class PatientController {
   @UseInterceptors(FileInterceptor('file'))
   async updatePatientInfo(
     @UploadedFile('file') files: Express.Multer.File,
-    @Request() req: any,
+    @Req() req: any,
+    @Body() body: any,
   ) {
-    if (typeof req?.body?.patientHealthData === 'string') {
-      req.body.patientHealthData = JSON.parse(req.body.patientHealthData);
+    if (typeof body.patientHealthData === 'string') {
+      body.patientHealthData = JSON.parse(req.body.patientHealthData);
     }
 
-    if (typeof req?.body?.medicleReports === 'string') {
-      req.body.medicleReports = JSON.parse(req.body.medicleReports);
+    if (typeof body?.medicleReports === 'string') {
+      body.medicleReports = JSON.parse(req.body.medicleReports);
     }
 
     const validateBody = new ZodValidationPipe(patientUpdateSchema).transform(
       req.body,
-      {
-        type: 'body',
-      },
     );
 
     return this.patientService.updatePatient(
@@ -53,7 +51,10 @@ export class PatientController {
   @Roles(Role.User)
   @Delete('medicle-report/:reportId')
   @UseInterceptors(FileInterceptor('file'))
-  async deleteMedicleReport(@Request() req: any, @Param('reportId') reportId: string) {
+  async deleteMedicleReport(
+    @Req() req: any,
+    @Param('reportId') reportId: string,
+  ) {
     return this.patientService.deleteMedicReport(req.user.patient_id, reportId);
   }
 
@@ -61,7 +62,7 @@ export class PatientController {
   @Patch('medicle-report/:reportId')
   async updateMedicleReport(
     @UploadedFile('file') file: Express.Multer.File,
-    @Request() req: any,
+    @Req() req: any,
     @Param('reportId') reportId: string,
   ) {
     return this.patientService.updateMedicleReport(
@@ -74,7 +75,7 @@ export class PatientController {
 
   @Roles(Role.User)
   @Get('mdeicle-reports')
-  async getMedicleReports(@Request()  req: any){
+  async getMedicleReports(@Req() req: any) {
     return this.patientService.getMedicleReports(req.user.patient_id);
   }
 }

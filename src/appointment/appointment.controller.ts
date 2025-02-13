@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UsePipes,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { Role, Roles } from 'src/guard/role/roles.decorator';
 import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { AppointmentDto, appointmentSchema } from './dto/appointment.dto';
 import { Public } from 'src/auth/metadata';
+import { JwtPayload } from 'src/jwt-auth/jwt.interface';
 
 @Controller('appointments')
 export class AppointmentController {
@@ -35,27 +37,27 @@ export class AppointmentController {
     @Param('appointmentId') appointmentId: string,
     @Request() req: any,
   ) {
-    return this.appointmentService.cancelAppointment(
-      appointmentId,
-      req.user,
-    );
+    return this.appointmentService.cancelAppointment(appointmentId, req.user);
   }
 
-
   @Get()
-  async allAppointments(@Request() req: any) {
-    return this.appointmentService.getAllAppointments(req.user.role, req.user, req.query)
+  async allAppointments(@Request() req: any, @Query() query: any) {
+    return this.appointmentService.getAllAppointments(
+      req.user.role,
+      req.user as JwtPayload,
+      query as Record<string, unknown>,
+    );
   }
 
   @Public()
   @Get('cancelled')
-  async cancelledAppointments(@Request() req: any) {
-    return this.appointmentService.cancelAllPendingAppointment()
+  async cancelledAppointments() {
+    return this.appointmentService.cancelAllPendingAppointment();
   }
 
   @Public()
   @Get('mark-completed')
   async markCompletedAppointments() {
-    return this.appointmentService.markCompletedAppointments()
+    return this.appointmentService.markCompletedAppointments();
   }
 }

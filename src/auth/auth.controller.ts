@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UsePipes,
-} from '@nestjs/common';
+import { Controller, Post, Body, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   LoginDto,
@@ -17,7 +8,7 @@ import {
 } from './dto/create-auth.dto';
 import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { Public } from './metadata';
-import { Role, Roles } from 'src/guard/role/roles.decorator';
+
 import { AuthSwagger } from './swagger/auth.swagger';
 
 @Controller('auth')

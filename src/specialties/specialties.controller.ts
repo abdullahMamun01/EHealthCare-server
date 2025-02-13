@@ -8,7 +8,6 @@ import {
   Request,
   UploadedFile,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { SpecialtiesService } from './specialties.service';
 import { Role, Roles } from 'src/guard/role/roles.decorator';

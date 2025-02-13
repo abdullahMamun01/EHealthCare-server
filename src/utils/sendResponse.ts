@@ -1,11 +1,14 @@
-const sendResponse = <T>(
-  {
-    message,
-    status,
-    data,
-    success,
-  }: { message: string; success: boolean; status: number; data: T },
-) => {
+const sendResponse = <T>({
+  message,
+  status,
+  data,
+  success,
+}: {
+  message: string;
+  success: boolean;
+  status: number;
+  data: T;
+}) => {
   return {
     success,
     message,

@@ -49,7 +49,6 @@ export class AuthService {
   }
 
   async signin(payload: LoginDto) {
-
     const isExist = await this.prismaService.user.findUnique({
       where: { email: payload.email },
     });
@@ -57,7 +56,6 @@ export class AuthService {
     if (!isExist) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-
     const user = await this.prismaService[
       isExist.role.toLowerCase()
     ].findUnique({

@@ -14,7 +14,6 @@ export class AdminService {
     private cloudinaryService: CloudinaryService,
   ) {}
   async createDoctor(payload: CreateDoctorDto, file?: Express.Multer.File) {
-
     const isExist = await this.prismaService.user.findUnique({
       where: { email: payload.email },
     });
@@ -22,10 +21,10 @@ export class AdminService {
       throw new HttpException('User already exists', HttpStatus.FOUND);
     }
 
-    let photoUrl = null;
+    let photoUrl = '';
     if (file) {
       const result = await this.cloudinaryService.uploadImage(file);
-      photoUrl = result.url;
+      photoUrl = result.url as string;
     }
     const transaction = await this.prismaService.$transaction(async (tx) => {
       const hashedPassword = await this.jwtService.hashedPassword(
@@ -38,7 +37,6 @@ export class AdminService {
           role: 'DOCTOR',
         },
       });
-      const { password, ...others } = payload;
       const doctor = await tx.doctor.create({
         data: {
           email: user.email,
@@ -75,10 +73,10 @@ export class AdminService {
       throw new HttpException('User already exists', HttpStatus.FOUND);
     }
 
-    let photoUrl = null;
+    let photoUrl = '';
     if (file) {
       const result = await this.cloudinaryService.uploadImage(file);
-      photoUrl = result.url;
+      photoUrl = result.url as string;
     }
 
     const result = await this.prismaService.$transaction(async (tx) => {

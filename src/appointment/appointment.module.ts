@@ -5,6 +5,6 @@ import { PaginationService } from 'src/pagination/pagination.service';
 
 @Module({
   controllers: [AppointmentController],
-  providers: [AppointmentService,PaginationService],
+  providers: [AppointmentService, PaginationService],
 })
 export class AppointmentModule {}

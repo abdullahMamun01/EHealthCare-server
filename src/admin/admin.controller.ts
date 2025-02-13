@@ -1,12 +1,7 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  UsePipes,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -31,9 +26,10 @@ export class AdminController {
   @UseInterceptors(FileInterceptor('file'))
   createDoctor(
     @UploadedFile() file: Express.Multer.File,
-    @Body(new ZodValidationPipe(createDoctorSchema)) createDoctorDto: CreateDoctorDto,
+    @Body(new ZodValidationPipe(createDoctorSchema))
+    createDoctorDto: CreateDoctorDto,
   ) {
-    return this.adminService.createDoctor(createDoctorDto , file);
+    return this.adminService.createDoctor(createDoctorDto, file);
   }
 
   @Roles(Role.Admin)
@@ -43,8 +39,6 @@ export class AdminController {
     @UploadedFile() file: Express.Multer.File,
     @Body(new ZodValidationPipe(adminSchema)) createAdminDto: CreateAdminDto,
   ) {
-  
-
     return this.adminService.createAdmin(createAdminDto, file);
   }
 }

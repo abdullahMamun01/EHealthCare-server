@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Patient, Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
+import { PrismaClient, Prisma } from '@prisma/client';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 import sendResponse from 'src/utils/sendResponse';
 
@@ -13,7 +13,7 @@ export class PaginationService {
   private queryFilters: any = {};
   constructor(private readonly prismaService: PrismaService) {}
 
-  async setModel(modelName: string) {
+  setModel(modelName: string) {
     this.model = this.prismaService[modelName];
   }
   paginate(paginateQuery: any) {
@@ -49,10 +49,8 @@ export class PaginationService {
   }
 
   find(fields: { fieldName: string; value: string | number | boolean }[]) {
- 
     if (fields && fields.length > 0) {
       this.queryFilters.filters = fields.reduce((acc, curr) => {
-
         acc[curr.fieldName] = curr.value;
         return acc;
       }, {});
@@ -60,7 +58,7 @@ export class PaginationService {
       this.queryFilters.filters = {};
     }
 
-    return this
+    return this;
   }
 
   nestedFilters(filteringName: string) {
@@ -86,7 +84,7 @@ export class PaginationService {
 
     return this;
   }
-  async sortBy(orderBy: string = 'date_asc') {
+  sortBy(orderBy: string = 'date_asc') {
     let field = 'createdAt';
     let order: 'asc' | 'desc' = 'asc';
 
@@ -119,7 +117,9 @@ export class PaginationService {
     const whereAndOrder = {
       where: {
         ...(this.queryFilters.OR?.length ? { OR: this.queryFilters.OR } : {}),
-        ...(this.queryFilters.AND?.length ? { AND: this.queryFilters.AND } : {}),
+        ...(this.queryFilters.AND?.length
+          ? { AND: this.queryFilters.AND }
+          : {}),
         ...filters,
       },
       orderBy: this.queryFilters.orderBy,
@@ -131,7 +131,7 @@ export class PaginationService {
       ...whereAndOrder,
       skip: (+page - 1) * +limit,
       take: +limit,
-      include: queryIncludes, 
+      include: queryIncludes,
     });
 
     return {
@@ -141,7 +141,7 @@ export class PaginationService {
         data,
         status: 200,
       }),
-      ...(data.length > 0 && {metadata: this.metadata}),
+      ...(data.length > 0 && { metadata: this.metadata }),
     };
   }
 }

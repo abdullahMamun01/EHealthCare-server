@@ -2,18 +2,14 @@ import {
   Body,
   Controller,
   Get,
-  Param,
-  Patch,
   Post,
   Query,
   Request,
-  UploadedFile,
-  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { Public } from 'src/auth/metadata';
-import { FileInterceptor } from '@nestjs/platform-express';
+
 import { Role, Roles } from 'src/guard/role/roles.decorator';
 import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import {
@@ -38,7 +34,9 @@ export class DoctorController {
     @Request() req: any,
     @Body() doctorSpecialtiesDto: DoctorSpecialtiesDto,
   ) {
-
-    return await this.doctorService.createSpeciality(doctorSpecialtiesDto, req.user.doctor_id);
+    return await this.doctorService.createSpeciality(
+      doctorSpecialtiesDto,
+      req.user.doctor_id,
+    );
   }
 }

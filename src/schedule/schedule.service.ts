@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Schedule } from '@prisma/client';
 import {
   addDays,
-  addMinutes,
   differenceInDays,
   differenceInMinutes,
   endOfDay,
@@ -72,13 +71,15 @@ export class ScheduleService {
 
   async getAllSchedules(startDate?: Date, endDate?: Date) {
     const currentDate = addDays(new Date(), 0);
-    const startDateTime = startDate ? startOfDay(startDate) : startOfDay(currentDate);
-    const endDateTime = endOfDay(endDate ?? startDate ?? currentDate)
+    const startDateTime = startDate
+      ? startOfDay(startDate)
+      : startOfDay(currentDate);
+    const endDateTime = endOfDay(endDate ?? startDate ?? currentDate);
     const schedules = await this.prismaService.schedule.findMany({
       where: {
         startTime: { gte: startDateTime },
-         endTime: { lte: endDateTime } ,
-      },      
+        endTime: { lte: endDateTime },
+      },
       orderBy: {
         startTime: 'asc',
       },
@@ -87,21 +88,21 @@ export class ScheduleService {
       message: 'Schedules retrieved successfully',
       success: true,
       status: 200,
-      data: {total:schedules.length,schedules },
-    })
+      data: { total: schedules.length, schedules },
+    });
   }
 
   async deletedScheduleById(scheduleId: string) {
     await this.prismaService.schedule.findUniqueOrThrow({
-      where : {
-        id : scheduleId
-      }
-    })
+      where: {
+        id: scheduleId,
+      },
+    });
     const deleteSchedule = await this.prismaService.schedule.delete({
       where: {
-        id: scheduleId
-      }
-    })
+        id: scheduleId,
+      },
+    });
 
     return sendResponse({
       message: 'Schedule deleted successfully',

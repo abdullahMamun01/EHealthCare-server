@@ -5,6 +5,7 @@ import {
   UploadApiResponse,
   UploadApiErrorResponse,
 } from 'cloudinary';
+import { Readable } from 'stream';
 import streamifier from 'streamifier';
 @Injectable()
 export class CloudinaryService {
@@ -15,23 +16,20 @@ export class CloudinaryService {
       api_secret: this.configarationService.get('config.cloudinarySecretkey'),
     });
   }
-/* 
 
-cloudinaryApikey: process.env.CLOUDINARY_API_KEY,
-  cloudinarySecretkey: process.env.CLOUDINARY_API_SECRET,
-*/
   uploadImage(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
         (err: any, result: any) => {
-          if (err) reject(err);
+          if (err) reject(new Error(err.message as string));
 
           resolve(result);
         },
       );
-      return streamifier.createReadStream(file.buffer).pipe(upload);
+      const readStream: Readable = streamifier.createReadStream(file.buffer);
+      return readStream.pipe(upload);
     });
   }
 

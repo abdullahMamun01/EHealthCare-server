@@ -56,10 +56,12 @@ export class StripeService {
 
   async webhook(signature: string, req: any) {
     const sig = signature;
-    const webhookSecret = this.configService.get('config.stripe.webhookSecret');
+    const webhookSecret = this.configService.get<string>(
+      'config.stripe.webhookSecret',
+    );
     const event = this.stripe.webhooks.constructEvent(
       req.rawBody as Buffer,
-      sig as string,
+      sig,
       webhookSecret,
     );
     // const  {metadata} = event.data.object
@@ -76,7 +78,7 @@ export class StripeService {
             },
             data: {
               status: 'CONFIRMED',
-              paymentStatus: "COMPLETED"
+              paymentStatus: 'COMPLETED',
             },
           });
 

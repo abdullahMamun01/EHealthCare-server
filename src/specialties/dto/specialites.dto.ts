@@ -25,16 +25,15 @@ export enum DoctorSpecialty {
   AYURVEDA = 'Ayurveda',
 }
 
-
-
 const specialitySchema = z.object({
-
-    name: z.nativeEnum(DoctorSpecialty, {
-      errorMap: () => ({ message: `Invalid specialty, please enter one of ${Object.values(DoctorSpecialty).join(', ')}` }),
+  name: z.nativeEnum(DoctorSpecialty, {
+    errorMap: () => ({
+      message: `Invalid specialty, please enter one of ${Object.values(DoctorSpecialty).join(', ')}`,
     }),
+  }),
   icon: z.string().min(1, 'Icon is required').optional(),
 });
 
 export type SpecialitesDto = z.infer<typeof specialitySchema>;
 
-export  { specialitySchema };
+export { specialitySchema };

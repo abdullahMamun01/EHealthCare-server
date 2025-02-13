@@ -7,8 +7,6 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
-import { extractErrorPaths } from 'src/utils/zodErrorsPath';
-import Stripe from 'stripe';
 import { ZodError } from 'zod';
 
 @Catch()
@@ -32,7 +30,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         success: false,
       });
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(exception.code)
+      console.log(exception.code);
       this.logger.error(`Prisma Error: ${exception.message}`);
       console.log(exception.code);
       let message = '';
@@ -71,7 +69,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         success: false,
       });
     }
-  
+
     // Default error handling for other cases
     this.logger.error(exception?.message || 'Unexpected error');
     response.status(status).json({

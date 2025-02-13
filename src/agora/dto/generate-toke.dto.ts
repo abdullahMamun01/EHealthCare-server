@@ -7,12 +7,14 @@ export const generateTokenSchema = z.object({
     .refine(
       (role) => ['PUBLISHER', 'SUBSCRIBER'].includes(role),
       'Invalid role',
-    ).optional(),
+    )
+    .optional(),
   uid: z.string().uuid('Invalid UID format'),
   expireTimeInSeconds: z
     .number()
     .min(1, 'Expiration time must be at least 1 second')
-    .max(86400, 'Expiration time cannot exceed 24 hours').optional(),
-}); 
+    .max(86400, 'Expiration time cannot exceed 24 hours')
+    .optional(),
+});
 
 export type GenerateTokenDto = z.infer<typeof generateTokenSchema>;

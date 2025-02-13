@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DoctorSchedules } from '@prisma/client';
-import { addDays, addMinutes, startOfDay, subMinutes } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { PrismaService } from 'src/prisma/prisma.service';
 import sendResponse from 'src/utils/sendResponse';
 

@@ -1,17 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AppointmentDto } from './dto/appointment.dto';
-import { Appointment, DoctorSchedules } from '@prisma/client';
+import { Appointment } from '@prisma/client';
 import { v4 as uuid4 } from 'uuid';
 import sendResponse from 'src/utils/sendResponse';
-import { Role } from 'src/guard/role/roles.decorator';
+
 import { PaginationService } from 'src/pagination/pagination.service';
-import {
-  addDays,
-  differenceInHours,
-  differenceInMinutes,
-  subMinutes,
-} from 'date-fns';
+import { subMinutes } from 'date-fns';
+import { JwtPayload } from 'src/jwt-auth/jwt.interface';
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -53,7 +49,7 @@ export class AppointmentService {
       await tx.doctorSchedules.update({
         where: {
           doctorId_scheduleId: {
-            doctorId: payload.doctorId as string,
+            doctorId: payload.doctorId,
             scheduleId: payload.scheduleId,
           },
         },
@@ -93,7 +89,7 @@ export class AppointmentService {
         },
       });
 
-      const cancelDoctorAppointment = await tx.doctorSchedules.update({
+      await tx.doctorSchedules.update({
         where: {
           doctorId_scheduleId: {
             doctorId: cancelAppointment.doctorId,
@@ -194,32 +190,29 @@ export class AppointmentService {
       },
     });
 
-    console.log(appointments)
-
     return sendResponse({
       message: 'All confirmed appointments have been updated',
       data: appointments,
       success: true,
       status: 200,
     });
- 
   }
 
   async getAllAppointments(
-    role: Role,
-    user: any,
+    role: any,
+    user: JwtPayload,
     query: Record<string, unknown>,
   ) {
     const filterConditions = [];
     if (role === 'PATIENT') {
       filterConditions.push({
         fieldName: 'patientId',
-        value: user.patientId,
+        value: user?.patient_id,
       });
     } else if (role === 'DOCTOR') {
       filterConditions.push({
         fieldName: 'doctorId',
-        value: user.doctorId,
+        value: user.doctor_id,
       });
     }
 

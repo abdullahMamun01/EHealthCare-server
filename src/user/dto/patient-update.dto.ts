@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 enum Gender {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
@@ -13,10 +12,10 @@ const patientUpdateSchema = z.object({
   contactNo: z
     .string()
     .min(10, 'Contact number must be at least 10 digits')
-    .optional(), 
+    .optional(),
   address: z.string().optional(),
-  gender: z.enum([Gender.MALE, Gender.FEMALE]).optional(), 
-  country: z.string().min(1, 'Country is required').optional(), 
+  gender: z.enum([Gender.MALE, Gender.FEMALE]).optional(),
+  country: z.string().min(1, 'Country is required').optional(),
 });
 
 export type patientUpdateDto = z.infer<typeof patientUpdateSchema>;

@@ -7,8 +7,9 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { IS_PUBLIC_KEY } from './metadata';
-import { JwtAuthService } from 'src/jwt-auth/jwt-auth.service';
+
 import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from 'src/jwt-auth/jwt.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -28,16 +29,15 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret: this.configService.get('config.accessToken'),
       });
-
 
       request['user'] = payload;
     } catch {
@@ -47,14 +47,15 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    // @ts-ignore
-    const authorization = request.headers.authorization?.trim();
-    if (!authorization) {
+    const authorization = request.headers['authorization'] as
+      | string
+      | undefined;
+
+    if (typeof authorization !== 'string') {
       return undefined;
     }
-    // Split using a regex to handle extra spaces or tabs
-    const [type, token] = authorization.split(/\s+/);
 
+    const [type, token] = authorization.trim().split(/\s+/);
     return type === 'Bearer' ? token : undefined;
   }
 }

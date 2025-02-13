@@ -1,6 +1,8 @@
+/* eslint-disable no-case-declarations */
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { format } from 'date-fns';
+import { JwtPayload } from 'src/jwt-auth/jwt.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import sendResponse from 'src/utils/sendResponse';
 
@@ -8,7 +10,7 @@ import sendResponse from 'src/utils/sendResponse';
 export class MetaService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async fetchMetaData(user: any) {
+  async fetchMetaData(user: JwtPayload) {
     switch (user.role) {
       case 'PATIENT':
         const patientMeataData = await this.getPatientMetaData(user);
@@ -28,6 +30,7 @@ export class MetaService {
         });
       case 'ADMIN':
         const metadata = await this.commonMetaData(user);
+
         const getAdminMetaData = await this.getAdminMetaData();
         return sendResponse({
           status: 200,
@@ -43,12 +46,12 @@ export class MetaService {
     }
   }
 
-  private async commonMetaData(user: any) {
-    const wherConditions = {};
+  private async commonMetaData(user: JwtPayload): Promise<any> {
+    const wherConditions: Record<string, any> = {};
     switch (user.role) {
       case 'PATIENT':
         wherConditions['patientId'] = user.patient_id;
-      
+
         break;
       case 'DOCTOR':
         wherConditions['doctorId'] = user.doctor_id;
@@ -71,11 +74,14 @@ export class MetaService {
         where: { ...wherConditions, status: 'CANCELED' },
       }),
       this.prismaService.appointment.count({
-        where: { ...wherConditions, status: 'COMPLETED' ,paymentStatus:'COMPLETED' },
+        where: {
+          ...wherConditions,
+          status: 'COMPLETED',
+          paymentStatus: 'COMPLETED',
+        },
       }),
     ]);
-    console.log(wherConditions)
-    console.log(user.role , completedAppointment)
+
     return {
       appointmentCount,
       prescriptionCount,
@@ -130,8 +136,9 @@ export class MetaService {
     return totalRevenue;
   }
 
-  private async getPatientMetaData(user: any) {
-    return await this.commonMetaData(user);
+  private async getPatientMetaData(user: JwtPayload) {
+    const patientMeta = await this.commonMetaData(user);
+    return patientMeta as unknown;
   }
 
   private async getDoctorMetaData(user: any) {
@@ -198,7 +205,6 @@ export class MetaService {
     const profitByMonth = await this.getProfitByTimePeriod('month');
     const profitByYear = await this.getProfitByTimePeriod('year');
     const monthlyAppointment = await this.getAppointmentByTimePeriod('month');
-    const commonMetaData = this.commonMetaData
     const monthly_appointment = monthlyAppointment.map((data) => ({
       month: format(data.month, 'yyyy-MM'),
       appointments: data.appointments,

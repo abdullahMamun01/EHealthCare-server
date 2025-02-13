@@ -6,7 +6,7 @@ const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
 
 const currentDate = new Date();
-currentDate.setSeconds(0, 0); 
+currentDate.setSeconds(0, 0);
 currentDate.setHours(0, 0, 0, 0);
 const dateValidator = z
   .string()
@@ -20,7 +20,6 @@ const dateValidator = z
       message: 'Date must be present or in the future',
     },
   );
-
 
 const timeValidator = z
   .string()

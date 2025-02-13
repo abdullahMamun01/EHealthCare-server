@@ -18,10 +18,10 @@ export class SpecialtiesService {
       throw new HttpException('Specility already exists', HttpStatus.FOUND);
     }
 
-    let icon = null;
+    let icon = '';
     if (file) {
       const result = await this.cloudinaryService.uploadImage(file);
-      icon = result.url;
+      icon = result.url as string;
     }
 
     const data = await this.prismaService.specialites.create({

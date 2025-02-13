@@ -27,19 +27,19 @@ export class PatientService {
     let reportLink = '';
     if (file) {
       const result = await this.cloudinaryService.uploadImage(file);
-      reportLink = result.url;
+      reportLink = result.url as string;
     }
 
     if (medicleReports.reportLink) {
       const result = await this.cloudinaryService.uploadImageFromUrl(
         medicleReports.reportLink,
       );
-      reportLink = result.url;
+      reportLink = result.url as string;
     }
 
     await this.prismaService.$transaction(async (tx) => {
       if (patientHealthData) {
-        const patientHealhtData = await this.updateHealthData(
+        await this.updateHealthData(
           tx,
           patientHealthData as Prisma.PatientHealthDataCreateInput,
           patientId,
@@ -127,7 +127,7 @@ export class PatientService {
     updateReportDto: MedicleReportsDto,
     file: Express.Multer.File,
   ) {
-    const report = await this.prismaService.medicleReports.findUniqueOrThrow({
+    await this.prismaService.medicleReports.findUniqueOrThrow({
       where: { id: reportId, patientId },
     });
 

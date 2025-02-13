@@ -5,6 +5,6 @@ import { PaginationService } from 'src/pagination/pagination.service';
 
 @Module({
   controllers: [ReviewController],
-  providers: [ReviewService,PaginationService],
+  providers: [ReviewService, PaginationService],
 })
 export class ReviewModule {}

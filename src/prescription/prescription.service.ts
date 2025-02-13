@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { prescriptionDto } from './dto/prescription.dto';
 import sendResponse from 'src/utils/sendResponse';
 import { Prescription } from '@prisma/client';
+import { JwtPayload } from 'src/jwt-auth/jwt.interface';
 
 @Injectable()
 export class PrescriptionService {
@@ -14,7 +15,7 @@ export class PrescriptionService {
     this.paginationService.setModel('prescription');
   }
 
-  async getAllPrescriptions(query: Record<string, unknown>, user: any) {
+  async getAllPrescriptions(query: Record<string, unknown>, user: JwtPayload) {
     const filterConditions = [];
     if (user.role === 'DOCTOR') {
       filterConditions.push({

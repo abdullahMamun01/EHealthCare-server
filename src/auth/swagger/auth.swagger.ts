@@ -1,11 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiProperty,
-  ApiResponse,
-} from '@nestjs/swagger';
-
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export class AuthSwagger {
   static createUser() {
@@ -61,7 +55,7 @@ export class AuthSwagger {
             password: { type: 'string' },
           },
         },
-      }) ,
+      }),
       ApiResponse({ status: 200, description: 'User fetched successfully' }),
       ApiResponse({ status: 400, description: 'Bad Request' }),
       ApiResponse({ status: 500, description: 'Internal Server Error' }),

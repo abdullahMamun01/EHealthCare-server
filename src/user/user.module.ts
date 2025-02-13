@@ -5,6 +5,6 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Module({
   controllers: [UserController],
-  providers: [UserService , CloudinaryService],
+  providers: [UserService, CloudinaryService],
 })
 export class UserModule {}

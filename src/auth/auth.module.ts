@@ -6,8 +6,8 @@ import { JwtAuthModule } from 'src/jwt-auth/jwt-auth.module';
 import { JwtAuthService } from 'src/jwt-auth/jwt-auth.service';
 
 @Module({
-  imports: [JwtAuthModule , JwtModule],
+  imports: [JwtAuthModule, JwtModule],
   controllers: [AuthController],
-  providers: [AuthService,JwtAuthService],
+  providers: [AuthService, JwtAuthService],
 })
 export class AuthModule {}

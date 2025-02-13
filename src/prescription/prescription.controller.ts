@@ -28,7 +28,10 @@ export class PrescriptionController {
   @Post()
   @UsePipes(new ZodValidationPipe(prescriptionSchema))
   async createPrescription(@Request() req: any, @Body() body: any) {
-    return await this.prescriptionService.createPrescription(body, req.user.doctor_id);
+    return await this.prescriptionService.createPrescription(
+      body,
+      req.user.doctor_id,
+    );
   }
 
   @Roles(Role.Doctor)

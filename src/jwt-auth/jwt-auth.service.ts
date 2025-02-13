@@ -2,37 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-
+import { JwtPayload } from './jwt.interface';
 @Injectable()
 export class JwtAuthService {
   constructor(
     private readonly jwtservice: JwtService,
     private configService: ConfigService,
   ) {}
-  async accessToken(payload: any) {
+  async accessToken(payload: JwtPayload) {
     const token = await this.jwtservice.signAsync(payload, {
       secret: this.configService.get('config.accessToken'),
-      expiresIn: this.configService.get('config.accessTokenExpiresIn'),
+      expiresIn: this.configService.get<string>('config.accessTokenExpiresIn'),
     });
     return token;
   }
 
-  async refreshToken(payload: any) {
+  async refreshToken(payload: JwtPayload) {
     const token = await this.jwtservice.signAsync(payload, {
       secret: this.configService.get('config.refreshToken'),
-      expiresIn: this.configService.get('config.refreshTokenExpiresIn'),
+      expiresIn: this.configService.get<string>('config.refreshTokenExpiresIn'),
     });
     return token;
   }
 
   async verifyAccessToken(token: string) {
-    return await this.jwtservice.verifyAsync(token, {
+    return await this.jwtservice.verifyAsync<JwtPayload>(token, {
       secret: this.configService.get('config.accessToken'),
     });
   }
 
   async verifyRefresToken(token: string) {
-    return await this.jwtservice.verifyAsync(token, {
+    return await this.jwtservice.verifyAsync<JwtPayload>(token, {
       secret: this.configService.get('config.refreshToken'),
     });
   }
@@ -44,7 +44,8 @@ export class JwtAuthService {
 
       return hashed;
     } catch (error) {
-      console.log(error.message, 'hello');
+      const err = error as Error;
+      console.log(err.message, 'hello');
     }
   }
 

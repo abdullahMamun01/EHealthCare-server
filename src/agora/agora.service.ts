@@ -1,11 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RtcRole, RtcTokenBuilder } from 'agora-token';
 import sendResponse from 'src/utils/sendResponse';
-import { v4 as uuidv4 } from 'uuid';
-
 export type RtRole = 'publisher' | 'subscriber';
-
 @Injectable()
 export class AgoraService {
   private appId: string;
@@ -36,7 +34,7 @@ export class AgoraService {
       message: 'Token generated successfully',
       data: {
         token,
-        channelName : `${channelName}-${uid}`,
+        channelName: `${channelName}-${uid}`,
         uid,
       },
       success: true,

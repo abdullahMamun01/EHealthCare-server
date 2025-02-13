@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
 import sendResponse from 'src/utils/sendResponse';
 import { PaymentDto } from './dto/payment.dto';
+import { Appointment } from '@prisma/client';
 
 @Injectable()
 export class PaymentService {
@@ -22,7 +23,7 @@ export class PaymentService {
         status: 'PENDING',
       },
     });
-    let createAppointment: any;
+    let createAppointment: Appointment;
     if (appointment) {
       createAppointment = appointment;
     } else {
@@ -44,7 +45,7 @@ export class PaymentService {
         },
       ],
       {
-        appointmentId: createAppointment.id as string,
+        appointmentId: createAppointment.id,
         patientId,
       },
     );
@@ -59,13 +60,3 @@ export class PaymentService {
     });
   }
 }
-
-/* 
-
-{
-        name: 'EHealthCare',
-        price: amount,
-        currency,
-        quantity: 1,
-      },
-*/
