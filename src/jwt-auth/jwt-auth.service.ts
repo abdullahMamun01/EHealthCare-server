@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './jwt.interface';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class JwtAuthService {
   constructor(
