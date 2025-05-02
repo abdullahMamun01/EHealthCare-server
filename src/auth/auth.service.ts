@@ -45,7 +45,7 @@ export class AuthService {
       success: true,
       message: 'User created successfully',
       data: transaction,
-    }); // Return the created user instead of just the email
+    }); 
   }
 
   async signin(payload: LoginDto) {
