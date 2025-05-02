@@ -1,17 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { MedicleReportsDto, PatientHealthDataDto, PatientUpdateDto } from './dto/patient.dto';
+import {
+  MedicleReportsDto,
+  PatientHealthDataDto,
+  PatientUpdateDto,
+} from './dto/patient.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import {  Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import sendResponse from 'src/utils/sendResponse';
+import { PaginationService } from 'src/pagination/pagination.service';
+import { find } from 'rxjs';
 const prisma = new PrismaClient();
 @Injectable()
 export class PatientService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
-  ) {}
+    private paginationService: PaginationService,
+  ) {
+    this.paginationService.setModel('patient');
+  }
 
+  async patients(query: Record<string, unknown>) {
+    const search = query.searchTerm || '';
+    return await this.paginationService
+      .paginate(query)
+      .search(search as string, ['name'])
+      .find([
+        {
+          fieldName: 'isDeleted',
+          value: false,
+        },
+      ])
+      .execute({
+        isDeleted: false,
+        createdAt: false,
+        updatedAt: false,
+        patientHealthData: false,
+      });
+  }
   async updatePatient(
     patiendUpdateDto: PatientUpdateDto,
     file: Express.Multer.File,
@@ -52,7 +79,7 @@ export class PatientService {
             patientId,
             reportName: medicleReports.reportName,
             reportLink,
-          } ,
+          },
         });
       }
       return;
@@ -84,7 +111,7 @@ export class PatientService {
       where: {
         patientId,
       },
-      update: healthData ,
+      update: healthData,
       create: {
         patientId,
         ...healthData,
@@ -168,6 +195,32 @@ export class PatientService {
       success: true,
       data: reports,
       message: 'Report retrieved successfully',
+    });
+  }
+
+  async deletePatient(patientId: string) {
+    const patient = await this.prismaService.patient.findUnique({
+      where: { id: patientId },
+    });
+    console.log({ patient });
+    if (!patient) {
+      throw new HttpException(
+        `PatientId with ID ${patientId} does not exist`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (patient.isDeleted) {
+      throw new HttpException('patientId already deleted', HttpStatus.CONFLICT);
+    }
+    await this.prismaService.patient.update({
+      where: { id: patientId },
+      data: { isDeleted: true },
+    });
+    return sendResponse({
+      message: 'Patient deleted successfully',
+      data: null,
+      success: true,
+      status: 200,
     });
   }
 }
