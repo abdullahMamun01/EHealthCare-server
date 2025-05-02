@@ -30,8 +30,7 @@ const specialitySchema = z.object({
     errorMap: () => ({
       message: `Invalid specialty, please enter one of ${Object.values(DoctorSpecialty).join(', ')}`,
     }),
-  }),
-  icon: z.string().min(1, 'Icon is required').optional(),
+  })
 });
 
 export type SpecialitesDto = z.infer<typeof specialitySchema>;

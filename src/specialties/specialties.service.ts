@@ -11,6 +11,7 @@ export class SpecialtiesService {
     private cloudinaryService: CloudinaryService,
   ) {}
   async createSpecility(payload: Specialites, file?: Express.Multer.File) {
+    console.log(file , 'file')
     const specility = await this.prismaService.specialites.findUnique({
       where: { name: payload.name },
     });
