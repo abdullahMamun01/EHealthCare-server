@@ -25,10 +25,14 @@ export class SpecialtiesController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   createSpeciality(
-    @UploadedFile() file: Express.Multer.File,
-    @Body(new ZodValidationPipe(specialitySchema))
+    @UploadedFile('file') file: Express.Multer.File,
+    @Body()
     specialityDto: SpecialitesDto,
   ) {
+
+    const parseDto = new ZodValidationPipe(specialitySchema).transform(specialityDto);
+
+
     return this.specialtiesService.createSpecility(
       specialityDto as Specialites,
       file,

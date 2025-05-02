@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request as Req,
   UploadedFile,
   UseInterceptors,
@@ -16,10 +17,14 @@ import { ZodValidationPipe } from 'src/others/zodValidationPipe';
 import { patientUpdateSchema } from './dto/patient.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-
-@Controller('patient')
+@Controller('patients')
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
+  @Roles(Role.Admin)
+  @Get()
+  async getPatientInfo(@Query() query: Record<string, unknown>) {
+    return this.patientService.patients(query);
+  }
 
   @Roles(Role.User)
   @Post()
@@ -77,5 +82,12 @@ export class PatientController {
   @Get('mdeicle-reports')
   async getMedicleReports(@Req() req: any) {
     return this.patientService.getMedicleReports(req.user.patient_id);
+  }
+
+  @Delete(':id')
+  @Roles(Role.Admin)
+  async deletePatient(@Param('id') patientId: string) {
+
+    return this.patientService.deletePatient(patientId);
   }
 }

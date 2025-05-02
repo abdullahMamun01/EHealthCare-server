@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import sendResponse from 'src/utils/sendResponse';
 import { PaginationService } from 'src/pagination/pagination.service';
 import { DoctorSpecialtiesDto } from './dto/doctor-speciality.dto';
+import { updateDoctorDto } from './dto/update-doctor.dto';
 @Injectable()
 export class DoctorService {
   constructor(
@@ -16,6 +17,12 @@ export class DoctorService {
     const search = query.searchTerm || '';
     return await this.paginationService
       .paginate(query)
+      .find([
+        {
+          fieldName: 'isDeleted',
+          value: false,
+        },
+      ])
       .search(search as string, ['name'])
       .nestedFilters('specialities')
       .execute({
@@ -28,9 +35,25 @@ export class DoctorService {
             specialites: true,
           },
         },
+        biography: false,
+        createdAt: false,
+        updatedAt: false,
+        isDeleted: false,
+        licenseNo: false,
       });
   }
-
+  async getDoctorById(doctorId: string) {
+    const doctor = await this.prismaService.doctor.findUniqueOrThrow({
+      where: { id: doctorId }
+    });
+    const { createdAt, updatedAt,biography, licenseNo, ...rest } = doctor;
+    return sendResponse({
+      data: rest,
+      message: 'Doctor retrieved successfully',
+      success: true,
+      status: 200,
+    });
+  }
   // async createAppointment() {}
 
   // async updateAppointment() {}
@@ -106,5 +129,54 @@ export class DoctorService {
       status: 200,
     });
   }
-  // async deleteAppointment() {}
+  async updateDoctor(doctorId: string, updateData: updateDoctorDto) {
+    const doctorExists = await this.prismaService.doctor.findUnique({
+      where: { id: doctorId },
+    });
+
+    if (!doctorExists) {
+      throw new HttpException(
+        `Doctor with ID ${doctorId} does not exist`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const updatedDoctor = await this.prismaService.doctor.update({
+      where: { id: doctorId },
+      data: updateData as any,
+    });
+
+    return sendResponse({
+      message: 'Doctor updated successfully',
+      data: updatedDoctor,
+      success: true,
+      status: 200,
+    });
+  }
+
+  async deleteDoctor(doctorId: string) {
+    const doctorExists = await this.prismaService.doctor.findUnique({
+      where: { id: doctorId },
+    });
+
+    if (!doctorExists) {
+      throw new HttpException(
+        `Doctor with ID ${doctorId} does not exist`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (doctorExists.isDeleted) {
+      throw new HttpException('Doctor already deleted', HttpStatus.CONFLICT);
+    }
+    await this.prismaService.doctor.update({
+      where: { id: doctorId },
+      data: { isDeleted: true },
+    });
+    return sendResponse({
+      message: 'Doctor deleted successfully',
+      data: null,
+      success: true,
+      status: 200,
+    });
+  }
 }
